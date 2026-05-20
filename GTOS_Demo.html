@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTOS — Gastronomic Tour Operating System (Demo)</title>
+<style>
+  :root {
+    --bg:#0f1117; --surface:#1a1d27; --surface2:#222638; --border:#2e3248;
+    --text:#e8eaf0; --muted:#6b7280; --accent:#f0813a; --accent2:#3a8ef0;
+    --accent3:#3acf7a; --warn:#f0c03a; --red:#f05a5a; --purple:#a855f7;
+    --radius:10px; --shadow:0 2px 12px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+  
+  /* LANDING HERO */
+  .hero{background:linear-gradient(135deg,rgba(138,43,226,.08) 0%,rgba(0,255,127,.08) 100%);border-bottom:2px solid var(--border);padding:60px 28px;text-align:center;margin-bottom:40px;}
+  .hero-logo{width:120px;height:120px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;background:rgba(138,43,226,.1);border-radius:20px;border:2px solid rgba(138,43,226,.2);}
+  .hero-title{font-size:48px;font-weight:900;background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;letter-spacing:-1px;}
+  .hero-subtitle{font-size:18px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+  .hero-desc{font-size:14px;color:var(--text);max-width:700px;margin:0 auto 32px;line-height:1.6;}
+  .demo-badge{display:inline-block;background:rgba(240,80,80,.2);color:#f08080;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px;border:1px solid rgba(240,80,80,.3);}
+
+  .pain-points{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px;max-width:1200px;margin-left:auto;margin-right:auto;}
+  @media(max-width:900px){.pain-points{grid-template-columns:1fr;}}
+  .pain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;}
+  .pain-icon{font-size:32px;margin-bottom:12px;}
+  .pain-title{font-size:15px;font-weight:700;margin-bottom:8px;}
+  .pain-text{font-size:13px;color:var(--muted);line-height:1.5;}
+  
+  .benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1200px;margin:0 auto 40px;}
+  @media(max-width:900px){.benefits{grid-template-columns:1fr;}}
+  .benefit-card{background:var(--surface2);border:1px solid var(--accent);border-radius:var(--radius);padding:20px;}
+  .benefit-icon{font-size:24px;margin-bottom:8px;}
+  .benefit-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--accent);}
+  .benefit-text{font-size:12px;color:var(--muted);line-height:1.5;}
+  
+  .cta-section{background:linear-gradient(135deg,rgba(138,43,226,.15) 0%,rgba(0,255,127,.15) 100%);border:2px solid #8a2be2;border-radius:var(--radius);padding:40px;text-align:center;margin-bottom:40px;max-width:900px;margin-left:auto;margin-right:auto;}
+  .cta-title{font-size:24px;font-weight:700;margin-bottom:12px;color:#8a2be2;}
+  .cta-text{font-size:14px;color:var(--muted);margin-bottom:24px;}
+  .btn-hero{background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);color:#000;padding:16px 40px;border-radius:8px;border:none;cursor:pointer;font-size:15px;font-weight:700;transition:all .3s;display:inline-block;}
+  .btn-hero:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(138,43,226,.35);}
+  
+  .demo-info{background:rgba(240,80,80,.12);border:1px solid rgba(240,80,80,.2);border-radius:var(--radius);padding:20px;margin-bottom:40px;max-width:900px;margin-left:auto;margin-right:auto;text-align:center;}
+  .demo-info-text{font-size:13px;color:var(--muted);margin-bottom:12px;}
+  .demo-info-title{font-size:14px;font-weight:700;color:#f08080;margin-bottom:8px;}
+  
+  .specs{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:40px;max-width:900px;margin-left:auto;margin-right:auto;}
+  .specs-title{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accent);}
+  .specs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:700px){.specs-grid{grid-template-columns:1fr;}}
+  .spec-item{display:flex;align-items:flex-start;gap:8px;}
+  .spec-icon{color:var(--accent3);font-weight:700;flex-shrink:0;}
+  .spec-text{font-size:13px;color:var(--muted);}
+  
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .logo{font-size:18px;font-weight:900;background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+  .subtitle{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+  .badge{font-size:10px;font-weight:700;background:rgba(240,80,80,.12);color:#f08080;border:1px solid rgba(240,80,80,.3);padding:4px 10px;border-radius:20px;letter-spacing:1px;}
+  nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:2px;overflow-x:auto;flex-wrap:nowrap;min-height:46px;}
+  nav::-webkit-scrollbar{height:3px;}
+  nav button{background:none;border:none;color:var(--muted);padding:12px 14px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:5px;}
+  nav button:hover{color:var(--text);}
+  nav button.active{color:#8a2be2;border-bottom-color:#8a2be2;}
+  .nav-icon{font-size:14px;}
+  main{padding:24px 28px;max-width:1400px;margin:0 auto;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+  .card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .icon-orange{background:rgba(240,129,58,.15);}
+  .icon-blue{background:rgba(58,142,240,.15);}
+  .icon-green{background:rgba(58,207,122,.15);}
+  .card-title{font-size:15px;font-weight:700;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media(max-width:900px){.grid-2,.grid-4{grid-template-columns:1fr;}}
+  .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+  .stat-num{font-size:32px;font-weight:900;color:#8a2be2;}
+  .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+  .form-group{margin-bottom:12px;}
+  .form-group label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+  input[type=text],input[type=date],select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;}
+  input[type=text]:focus,input[type=date]:focus,select:focus{border-color:#8a2be2;}
+  select option{background:var(--surface2);}
+  .btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s;}
+  .btn-primary{background:#8a2be2;color:#fff;}
+  .btn-primary:hover{background:#6b20a0;}
+  .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border);}
+  .btn-secondary:hover{border-color:#8a2be2;color:#8a2be2;}
+  .btn-sm{padding:5px 10px;font-size:12px;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+  .pill-orange{background:rgba(240,129,58,.15);color:var(--accent);}
+  .pill-blue{background:rgba(58,142,240,.15);color:var(--accent2);}
+  .pill-green{background:rgba(58,207,122,.15);color:var(--accent3);}
+  .td-center{text-align:center;}
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{background:var(--surface2);padding:8px 10px;text-align:left;border-bottom:2px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);white-space:nowrap;}
+  td{padding:8px 10px;border-bottom:1px solid var(--border);}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,.02);}
+  .tour-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .tour-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+  .tour-header{padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:1px;}
+  .tour-1 .tour-header{background:rgba(138,43,226,.15);border-bottom:2px solid #8a2be2;color:#8a2be2;}
+  .tour-2 .tour-header{background:rgba(58,142,240,.15);border-bottom:2px solid var(--accent2);color:var(--accent2);}
+  .tour-3 .tour-header{background:rgba(58,207,122,.15);border-bottom:2px solid var(--accent3);color:var(--accent3);}
+  .tour-city{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px;}
+  .tour-city:last-child{border-bottom:none;}
+  .tour-city span:first-child{display:flex;align-items:center;gap:8px;flex:1;}
+  .city-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .dot-orange{background:#8a2be2;}
+  .dot-blue{background:var(--accent2);}
+  .dot-green{background:var(--accent3);}
+  .city-dates{font-size:11px;color:var(--muted);}
+  .domain-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
+  @media(max-width:1000px){.domain-grid{grid-template-columns:repeat(3,1fr);}}
+  .domain-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:border-color .2s;}
+  .domain-card:hover{border-color:#8a2be2;}
+  .domain-card .d-icon{font-size:22px;margin-bottom:8px;}
+  .domain-card .d-title{font-size:12px;font-weight:700;}
+  .domain-card .d-count{font-size:11px;color:var(--muted);margin-top:2px;}
+  footer{background:var(--surface);border-top:1px solid var(--border);padding:40px 28px;margin-top:60px;text-align:center;}
+  .footer-content{max-width:900px;margin:0 auto;}
+  .footer-title{font-size:16px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .footer-text{font-size:13px;color:var(--muted);margin-bottom:16px;}
+  .footer-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:32px 0;}
+  @media(max-width:600px){.footer-meta{grid-template-columns:1fr;}}
+  .meta-item{text-align:center;}
+  .meta-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  .meta-value{font-size:14px;font-weight:700;color:#8a2be2;margin-top:4px;}
+  .footer-divider{height:1px;background:var(--border);margin:24px 0;}
+  .footer-bottom{font-size:12px;color:var(--muted);}
+  .upgrade-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:999;}
+  .upgrade-overlay.show{display:flex;}
+  .upgrade-modal{background:var(--surface);border:2px solid #8a2be2;border-radius:var(--radius);padding:40px;text-align:center;max-width:500px;}
+  .upgrade-modal-title{font-size:24px;font-weight:700;color:#8a2be2;margin-bottom:12px;}
+  .upgrade-modal-text{font-size:14px;color:var(--muted);margin-bottom:24px;}
+  .upgrade-btn{background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);color:#000;padding:14px 32px;border-radius:8px;border:none;cursor:pointer;font-size:15px;font-weight:700;transition:all .3s;}
+  .upgrade-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(138,43,226,.35);}
+  .close-upgrade{position:absolute;top:20px;right:20px;background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- LANDING HERO -->
+<div id="landing" style="display:block;">
+  <div class="hero">
+    <div class="hero-logo">
+      <svg width="100" height="100" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#8a2be2;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#00ff7f;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <g stroke="url(#brainGrad)" stroke-width="8" fill="none" stroke-linecap="round">
+          <path d="M 60 50 Q 55 55 55 65 Q 55 75 60 80" />
+          <path d="M 70 45 Q 65 55 65 70 Q 65 85 70 95" />
+          <path d="M 80 42 Q 75 55 75 75 Q 75 90 80 100" />
+          <path d="M 50 60 Q 45 70 50 85" />
+          <path d="M 90 48 Q 85 60 90 80" />
+          <path d="M 140 50 Q 145 55 145 65 Q 145 75 140 80" />
+          <path d="M 130 45 Q 135 55 135 70 Q 135 85 130 95" />
+          <path d="M 120 48 Q 125 60 120 80" />
+          <path d="M 150 60 Q 155 70 150 85" />
+          <line x1="100" y1="40" x2="100" y2="110" stroke="url(#brainGrad)" stroke-width="6" stroke-linecap="round" />
+        </g>
+      </svg>
+    </div>
+    <div class="demo-badge">🔍 DEMO LIMITADA — 2 de 9 secciones</div>
+    <h1 class="hero-title">GTOS</h1>
+    <p class="hero-subtitle">Gastronomic Tour Operating System</p>
+    <p class="hero-desc">Control total de festivales gastronómicos multi-ciudad. Esta es una demo limitada. Accede a las 9 secciones completas comprando el archivo.</p>
+  </div>
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 28px;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:24px;text-align:center;color:var(--text);">El problema que resuelve</h2>
+    <div class="pain-points">
+      <div class="pain-card">
+        <div class="pain-icon">🗂️</div>
+        <div class="pain-title">Caos de documentos dispersos</div>
+        <div class="pain-text">WhatsApp, Excel, emails: coordinación fragmentada sin visibilidad centralizada.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">⏱️</div>
+        <div class="pain-title">Cambios última hora</div>
+        <div class="pain-text">Riders, logística, equipos cambian. Sin sistema, no sabes quién está donde.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📋</div>
+        <div class="pain-title">Pérdida de información</div>
+        <div class="pain-text">Permisos, contactos, alojamiento olvidados o desactualizados.</div>
+      </div>
+    </div>
+
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:24px;margin-top:40px;text-align:center;color:var(--text);">Qué obtienes en la versión completa</h2>
+    <div class="benefits">
+      <div class="benefit-card">
+        <div class="benefit-icon">📊</div>
+        <div class="benefit-title">Dashboard en vivo</div>
+        <div class="benefit-text">Fases, dominios, equipo, documentos. Todo visible en un vistazo.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🗺️</div>
+        <div class="benefit-title">Planificación multi-ciudad</div>
+        <div class="benefit-text">3 giras paralelas con venues editables, travel sheets y rooming.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">⚙️</div>
+        <div class="benefit-title">Completamente personalizable</div>
+        <div class="benefit-text">Tablas, checklists, contactos: edita inline, sin codificación.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📱</div>
+        <div class="benefit-title">Offline. Forever.</div>
+        <div class="benefit-text">Un archivo HTML. Funciona en Mac, Windows, Linux. Sin internet, sin login.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📄</div>
+        <div class="benefit-title">Export a PDF</div>
+        <div class="benefit-text">Imprime o exporta en un click. Compartible, seguro.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">♻️</div>
+        <div class="benefit-title">Acceso de por vida</div>
+        <div class="benefit-text">Un pago. Sin suscripción. Sin renovaciones. Tuyo para siempre.</div>
+      </div>
+    </div>
+
+    <div class="demo-info">
+      <div class="demo-info-title">⚠️ Esta es una DEMO limitada</div>
+      <div class="demo-info-text">Estás viendo 2 de 9 secciones (Dashboard + Planning). Las 7 secciones restantes están disponibles solo en la versión completa.</div>
+      <div style="margin-top:16px;">
+        <button class="btn-hero" onclick="showUpgrade()">Desbloquear versión completa (49€) →</button>
+      </div>
+    </div>
+
+    <div class="specs">
+      <h3 class="specs-title">📋 Qué incluye la versión COMPLETA (9 secciones)</h3>
+      <div class="specs-grid">
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Dashboard — Live stats</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">General Planning — 3 giras</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Travel Sheet — Vuelos/trenes</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Assembly Tasks — Checklists</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Rooming — Asignaciones</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Logistics — Vehículos</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Teams — Matriz equipo</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Legal Docs — Permisos</span></div>
+        <div class="spec-item"><span class="spec-icon">✓</span><span class="spec-text">Accommodation — Hoteles</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP (DEMO - 2 SECTIONS ONLY) -->
+<div id="app" style="display:none;">
+  <header>
+    <div>
+      <div class="logo">GTOS</div>
+      <div class="subtitle">Demo — 2 de 9 secciones</div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <span class="badge">DEMO</span>
+      <button class="btn btn-secondary btn-sm" onclick="showUpgrade()" style="background:rgba(138,43,226,.15);color:#8a2be2;border-color:#8a2be2;">🔓 Desbloquear completo</button>
+      <button class="btn btn-secondary btn-sm" onclick="goToLanding()">← Atrás</button>
+    </div>
+  </header>
+
+  <nav id="nav-tabs"></nav>
+
+  <main id="main-content"></main>
+
+  <footer>
+    <div class="footer-content">
+      <div style="margin-bottom:24px;display:flex;justify-content:center;">
+        <div style="width:60px;height:60px;background:linear-gradient(135deg,#8a2be2 0%,#00ff7f 100%);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:20px;">BS</div>
+      </div>
+      <div class="footer-title">GTOS — Brain Streaming</div>
+      <div class="footer-text">Demo limitada a 2 secciones. Compra la versión completa para acceso a las 9 secciones.</div>
+      <div class="footer-meta">
+        <div class="meta-item">
+          <div class="meta-label">Versión</div>
+          <div class="meta-value">Demo (2/9)</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Acceso Completo</div>
+          <div class="meta-value">49€ en Gumroad</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Formato</div>
+          <div class="meta-value">Single HTML</div>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-bottom">Brain Streaming © 2026 | Production & Technical Management | diego@brainstreaming.es</div>
+    </div>
+  </footer>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="upgrade-overlay" id="upgradeModal">
+  <div class="upgrade-modal">
+    <button class="close-upgrade" onclick="hideUpgrade()">×</button>
+    <div class="upgrade-modal-title">🔓 Desbloquear versión completa</div>
+    <div class="upgrade-modal-text">Accede a las 9 secciones completas: Dashboard, Planning, Travel Sheet, Assembly Tasks, Rooming, Logistics, Teams, Legal Docs y Accommodation.</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">✓ Lifetime access — Sin suscripción<br>✓ Offline — Funciona en cualquier PC<br>✓ Un pago, tuyo para siempre</p>
+    <a href="https://diegomato.gumroad.com/l/tfuivj" target="_blank" class="upgrade-btn">Ir a Gumroad (49€) →</a>
+  </div>
+</div>
+
+<script>
+
+function showUpgrade() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+
+function hideUpgrade() {
+  document.getElementById('upgradeModal').classList.remove('show');
+}
+
+function enterApp() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  init();
+}
+
+function goToLanding() {
+  document.getElementById('landing').style.display = 'block';
+  document.getElementById('app').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+// ── DEMO APP (2 SECTIONS ONLY) ──────────────────────────────────
+
+const sections = [
+  { id: 'dashboard', title: '📊 Dashboard', icon: '📊' },
+  { id: 'planning', title: '🗓️ General Planning', icon: '🗓️' }
+];
+
+function init() {
+  renderNavigation();
+  renderSections();
+  setActiveTab('dashboard');
+}
+
+function renderNavigation() {
+  const nav = document.getElementById('nav-tabs');
+  nav.innerHTML = '';
+  sections.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.innerHTML = `<span class="nav-icon">${s.icon}</span> ${s.title}`;
+    btn.onclick = () => setActiveTab(s.id);
+    nav.appendChild(btn);
+  });
+}
+
+function setActiveTab(tabId) {
+  document.querySelectorAll('nav button').forEach((btn, i) => {
+    btn.classList.toggle('active', sections[i].id === tabId);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+function renderSections() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = `
+    <section id="dashboard" class="section active">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-orange">📊</div>
+          <div class="card-title">Live Stats</div>
+        </div>
+      </div>
+      <div class="grid-4">
+        <div class="stat-box">
+          <div class="stat-num" id="count-giras">3</div>
+          <div class="stat-label">Giras activas</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="count-sedes">0</div>
+          <div class="stat-label">Sedes totales</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="count-equipo">0</div>
+          <div class="stat-label">Personal asignado</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="count-tasks">0</div>
+          <div class="stat-label">Tasks completadas</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-blue">🎯</div>
+          <div class="card-title">Dominios de control</div>
+        </div>
+      </div>
+      <div class="domain-grid">
+        <div class="domain-card">
+          <div class="d-icon">🗓️</div>
+          <div class="d-title">Planning</div>
+          <div class="d-count">3 tours</div>
+        </div>
+        <div class="domain-card">
+          <div class="d-icon">✈️</div>
+          <div class="d-title">Viajes</div>
+          <div class="d-count" style="color:#f08080;">🔒 Completo</div>
+        </div>
+        <div class="domain-card">
+          <div class="d-icon">🔧</div>
+          <div class="d-title">Montaje</div>
+          <div class="d-count" style="color:#f08080;">🔒 Completo</div>
+        </div>
+        <div class="domain-card">
+          <div class="d-icon">🛏️</div>
+          <div class="d-title">Rooming</div>
+          <div class="d-count" style="color:#f08080;">🔒 Completo</div>
+        </div>
+        <div class="domain-card">
+          <div class="d-icon">👥</div>
+          <div class="d-title">Equipo</div>
+          <div class="d-count" style="color:#f08080;">🔒 Completo</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:32px;">
+        <button class="btn-hero" onclick="showUpgrade()">Desbloquear 7 secciones más →</button>
+      </div>
+    </section>
+
+    <section id="planning" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-orange">🗓️</div>
+          <div class="card-title">General Planning — 3 Giras paralelas</div>
+        </div>
+      </div>
+      <div id="tour-grid" class="tour-grid"></div>
+      <div style="padding:16px;"><button class="btn btn-primary" onclick="addGiraCol()">+ Nueva Gira</button></div>
+      <div style="text-align:center;margin-top:24px;padding:20px;background:rgba(240,80,80,.12);border-radius:10px;">
+        <p style="font-size:13px;color:#f08080;margin-bottom:12px;">⚠️ Travel Sheet, Rooming, Teams y más, disponibles solo en versión completa</p>
+        <button class="btn-hero" onclick="showUpgrade()">Comprar acceso completo (49€) →</button>
+      </div>
+    </section>
+  `;
+
+  addGiraCol();
+  addGiraCol();
+  addGiraCol();
+}
+
+let customGiraCount = 1;
+function addGiraCol() {
+  const colors = [['tour-1','dot-orange'],['tour-2','dot-blue'],['tour-3','dot-green']];
+  const c = colors[customGiraCount % colors.length];
+  const gId = 'sedes-cg-' + customGiraCount;
+  const div = document.createElement('div');
+  div.className = 'tour-col ' + c[0];
+  div.innerHTML = `<div class="tour-header" style="display:flex;align-items:center;justify-content:space-between"><span>⚡ <span contenteditable="true">GIRA ${customGiraCount}</span></span><button style="background:none;border:none;color:#f08080;cursor:pointer;font-size:16px;" onclick="this.closest('.tour-col').remove()">×</button></div><div id="${gId}"></div><div style="padding:10px 16px"><button class="btn btn-secondary btn-sm" onclick="addSedeToGira('${gId}','${c[1]}')">+ Sede</button></div>`;
+  document.getElementById('tour-grid').appendChild(div);
+  customGiraCount++;
+}
+
+function addSedeToGira(containerId, dotClass) {
+  const div = document.createElement('div');
+  div.className = 'tour-city';
+  div.innerHTML = `<span><span class="city-dot ${dotClass}"></span><span contenteditable="true">Nueva sede</span></span><span class="city-dates" contenteditable="true">Sem ?–?</span>`;
+  document.getElementById(containerId).appendChild(div);
+}
+
+</script>
+</body>
+</html>
